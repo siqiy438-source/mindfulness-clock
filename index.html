@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正念此刻 | Mindfulness</title>
+    <style>
+        /* --- 1. 基础设置 --- */
+        :root {
+            --bg-color: #E9F1EA; /* 浅灰绿背景 */
+            --text-color: #355E3B; /* 深森林绿字体 */
+            --accent-color: #8FBC8F; /* 柔和的强调色 */
+            --button-hover: #2E5233;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 1s ease;
+        }
+
+        /* --- 2. 容器布局 --- */
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            padding: 40px;
+        }
+
+        /* --- 3. 排版细节 --- */
+        h1 {
+            font-weight: 300;
+            letter-spacing: 4px;
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+        }
+
+        /* 阶段提示文字 */
+        #instruction {
+            font-size: 2rem;
+            font-weight: 400;
+            min-height: 3rem;
+            margin-bottom: 20px;
+            opacity: 0; /* 初始隐藏，用于淡入效果 */
+            transform: translateY(10px);
+            transition: all 0.8s ease;
+        }
+
+        #instruction.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 时间显示 */
+        #timer {
+            font-size: 6rem;
+            font-weight: 200;
+            font-variant-numeric: tabular-nums; /* 防止数字跳动 */
+            margin-bottom: 50px;
+            letter-spacing: -2px;
+        }
+
+        /* --- 4. 极简按钮 --- */
+        .btn {
+            background: none;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            margin: 0 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        /* 进度条 (极细) */
+        .progress-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(53, 94, 59, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--text-color);
+            width: 0%;
+            transition: width 1s linear;
+        }
+
+        /* 简单的淡入动画类 */
+        .fade-in {
+            animation: fadeIn 1.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container fade-in">
+        <h1>Mindfulness</h1>
+        
+        <div id="instruction" class="active">准备开始</div>
+        
+        <div id="timer">03:00</div>
+        
+        <div class="controls">
+            <button class="btn" id="toggleBtn" onclick="toggleTimer()">开始正念</button>
+            <button class="btn" onclick="resetTimer()">重置</button>
+        </div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <script>
+        // --- 设定 ---
+        // 你可以在这里修改每个阶段的时长（秒）和提示语
+        const phases = [
+            { duration: 30, text: "调整坐姿，放松肩膀" },
+            { duration: 45, text: "深吸一口气... 缓慢呼出" },
+            { duration: 60, text: "感受空气流过鼻尖的凉意" },
+            { duration: 30, text: "如果思绪飘走了，温柔地拉回来" },
+            { duration: 15, text: "慢慢将意识带回周围环境" }
+        ];
+
+        // 计算总时间
+        let totalDuration = phases.reduce((acc, curr) => acc + curr.duration, 0);
+        let timeRemaining = totalDuration;
+        let timerInterval = null;
+        let isRunning = false;
+        let currentPhaseIndex = 0;
+        let phaseTimeElapsed = 0; // 当前阶段已经过了多久
+
+        // --- DOM 元素 ---
+        const timerDisplay = document.getElementById('timer');
+        const instructionDisplay = document.getElementById('instruction');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const progressBar = document.getElementById('progressBar');
+
+        // --- 初始化显示 ---
+        updateTimerDisplay(timeRemaining);
+
+        // --- 核心逻辑 ---
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            isRunning = true;
+            toggleBtn.textContent = "暂停";
+            toggleBtn.style.backgroundColor = "transparent"; // 保持简约
+            
+            // 立即更新一次提示
+            updateInstruction();
+
+            timerInterval = setInterval(() => {
+                if (timeRemaining > 0) {
+                    timeRemaining--;
+                    phaseTimeElapsed++;
+                    
+                    updateTimerDisplay(timeRemaining);
+                    updateProgressBar();
+                    checkPhase(); // 检查是否需要切换提示语
+                } else {
+                    finishSession();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            toggleBtn.textContent = "继续";
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeRemaining = totalDuration;
+            currentPhaseIndex = 0;
+            phaseTimeElapsed = 0;
+            toggleBtn.textContent = "开始正念";
+            instructionDisplay.textContent = "准备开始";
+            instructionDisplay.classList.add('active');
+            updateTimerDisplay(totalDuration);
+            progressBar.style.width = "0%";
+        }
+
+        function finishSession() {
+            pauseTimer();
+            instructionDisplay.textContent = "练习结束，感谢你的专注";
+            toggleBtn.textContent = "再次开始";
+            progressBar.style.width = "100%";
+        }
+
+        // --- 辅助功能 ---
+        function updateTimerDisplay(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${m}:${s}`;
+        }
+
+        function updateProgressBar() {
+            const progress = ((totalDuration - timeRemaining) / totalDuration) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function checkPhase() {
+            // 计算当前处于哪个阶段
+            let accumulatedTime = 0;
+            let foundPhaseIndex = 0;
+
+            // 算出已经过去了多少总时间
+            let totalElapsed = totalDuration - timeRemaining;
+
+            for (let i = 0; i < phases.length; i++) {
+                accumulatedTime += phases[i].duration;
+                if (totalElapsed < accumulatedTime) {
+                    foundPhaseIndex = i;
+                    break;
+                }
+            }
+            
+            // 如果阶段发生变化，更新UI
+            if (foundPhaseIndex !== currentPhaseIndex) {
+                currentPhaseIndex = foundPhaseIndex;
+                updateInstructionWithFade();
+            } else if (isRunning && instructionDisplay.textContent === "准备开始") {
+                // 首次开始时的修正
+                 updateInstructionWithFade();
+            }
+        }
+        
+        function updateInstruction() {
+             instructionDisplay.textContent = phases[currentPhaseIndex].text;
+        }
+
+        function updateInstructionWithFade() {
+            // 简单的淡出淡入切换
+            instructionDisplay.classList.remove('active');
+            
+            setTimeout(() => {
+                instructionDisplay.textContent = phases[currentPhaseIndex].text;
+                instructionDisplay.classList.add('active');
+            }, 800); // 等待淡出动画完成
+        }
+
+    </script>
+</body>
+</html>
