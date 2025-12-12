@@ -3,144 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正念时刻 | Mindfulness</title>
+    <title>治愈时刻 | Relax & Breathe</title>
     <style>
-        /* --- 1. 基础设置 --- */
+        /* --- 1. 可爱风基础设置 --- */
         :root {
-            --bg-color: #E9F1EA;
-            --text-color: #355E3B;
-            --accent-color: #8FBC8F;
+            /* 马卡龙/动漫配色 */
+            --bg-color: #E0F8E0;  /* 极浅的薄荷绿背景 */
+            --text-color: #5F9EA0; /* 柔和的卡其蓝绿字体 */
+            --accent-pink: #FFB7C5; /* 樱花粉强调色 */
+            --card-bg: #F5FFF5;    /* 卡片背景色 */
         }
 
         body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: "Nunito", "Microsoft YaHei", -apple-system, sans-serif; /* 用稍微圆润点的字体 */
             background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh; /* 确保最小高度 */
             overflow: hidden;
-            user-select: none; /* 防止双击选中文字 */
+            user-select: none;
+            transition: background-color 0.5s ease;
         }
 
-        /* --- 2. 容器布局 --- */
+        /* --- 2. 容器布局 (卡片式) --- */
         .container {
             text-align: center;
-            max-width: 600px;
-            width: 90%;
-            padding: 20px;
+            max-width: 500px;
+            width: 85%;
+            padding: 40px 30px;
+            background-color: var(--card-bg);
+            border-radius: 30px; /* 超圆润边角 */
+            box-shadow: 0 10px 25px rgba(95, 158, 160, 0.15); /* 柔和的投影 */
             position: relative;
         }
 
-        /* 静音按钮 */
+        /* 静音按钮 (变可爱) */
         .mute-btn {
             position: absolute;
-            top: -60px;
-            right: 0;
-            background: none;
+            top: 20px;
+            right: 25px;
+            background: var(--bg-color);
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            opacity: 0.5;
-            transition: opacity 0.3s;
+            padding: 8px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s;
         }
-        .mute-btn:hover { opacity: 1; }
+        .mute-btn:hover { transform: scale(1.1); }
 
         /* 标题 */
         h1 {
-            font-weight: 300;
-            letter-spacing: 4px;
-            font-size: 1.2rem;
-            opacity: 0.6;
-            margin-bottom: 40px;
-            text-transform: uppercase;
+            font-weight: 400;
+            letter-spacing: 2px;
+            font-size: 1.3rem;
+            color: var(--accent-pink);
+            margin-bottom: 30px;
+        }
+        
+        /* --- 新增：可爱的呼吸动画崽 --- */
+        .breathing-buddy {
+            width: 80px;
+            height: 80px;
+            background-color: var(--accent-pink);
+            border-radius: 50%;
+            margin: 0 auto 30px auto;
+            opacity: 0.8;
+            box-shadow: 0 0 20px var(--accent-pink);
+            /* 默认轻微浮动 */
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* 开始后的呼吸动画类 */
+        .breathing-active {
+            animation: breathe 8s ease-in-out infinite !important;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.6); opacity: 0.4; } /* 吸气变大变淡 */
         }
 
         /* 阶段提示文字 */
         #instruction {
-            font-size: 1.8rem;
-            font-weight: 400;
-            min-height: 4rem; /* 预留高度防止跳动 */
+            font-size: 1.6rem;
+            font-weight: 500;
+            min-height: 3rem;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 1;
             transition: opacity 0.5s ease;
+            color: var(--text-color);
         }
 
         /* 时间显示 */
         #timer {
-            font-size: 5.5rem;
-            font-weight: 200;
+            font-size: 4.5rem;
+            font-weight: 300;
             font-variant-numeric: tabular-nums;
-            margin-bottom: 50px;
-            letter-spacing: -2px;
+            margin-bottom: 40px;
+            color: var(--accent-pink);
         }
 
         /* --- 3. 按钮组 --- */
         .controls {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .btn {
-            background: transparent;
-            border: 1px solid var(--text-color);
-            color: var(--text-color);
-            padding: 12px 0; /* 上下padding */
-            width: 140px;    /* 固定宽度，防止文字变化导致按钮跳动 */
+            background: var(--bg-color);
+            border: 2px solid var(--accent-pink);
+            color: var(--accent-pink);
+            padding: 12px 0;
+            width: 130px;
             font-size: 1rem;
-            border-radius: 50px;
+            font-weight: 600;
+            border-radius: 50px; /* 圆滚滚的按钮 */
             cursor: pointer;
             transition: all 0.2s ease;
             outline: none;
         }
 
         .btn:hover {
-            background-color: var(--text-color);
-            color: var(--bg-color);
+            background-color: var(--accent-pink);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 183, 197, 0.4);
         }
 
-        .btn:active {
-            transform: scale(0.98);
+        .btn:active { transform: scale(0.95); }
+        
+        /* 主按钮特殊样式 */
+        #mainBtn {
+            background-color: var(--accent-pink);
+            color: white;
+        }
+        #mainBtn:hover {
+            background-color: #ff9eb0;
         }
 
-        /* 进度条 */
+        /* 进度条 (粉色) */
         .progress-container {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 6px;
-            background: rgba(53, 94, 59, 0.1);
+            height: 8px;
+            background: #f0f0f0;
         }
 
         .progress-bar {
             height: 100%;
-            background: var(--text-color);
+            background: var(--accent-pink);
             width: 0%;
-            transition: width 1s linear;
+            transition: width 0.5s linear;
+            border-radius: 0 4px 4px 0;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <button class="mute-btn" id="muteBtn" onclick="toggleMute()" title="开启/关闭语音">🔊</button>
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-music-vol1-124477.mp3" type="audio/mpeg">
+        你的浏览器不支持 audio 元素。
+    </audio>
 
-        <h1>Mindfulness</h1>
+    <div class="container">
+        <button class="mute-btn" id="muteBtn" onclick="toggleMute()" title="开启/关闭语音指导">🔊</button>
+
+        <h1>✨ Calming Space ✨</h1>
         
-        <div id="instruction">准备开始</div>
+        <div class="breathing-buddy" id="breathBuddy"></div>
+
+        <div id="instruction">准备好了吗？🌱</div>
         
         <div id="timer">03:00</div>
         
         <div class="controls">
-            <button class="btn" id="mainBtn" onclick="toggleTimer()">开始正念</button>
+            <button class="btn" id="mainBtn" onclick="toggleTimer()">开始放松</button>
             <button class="btn" onclick="resetTimer()">重置</button>
         </div>
     </div>
@@ -150,16 +202,23 @@
     </div>
 
     <script>
-        // --- 数据配置 ---
-        // 你可以在这里修改文字，机器会自动读出这些字
+        // --- 新版数据配置 (更短、更多、更温柔) ---
         const phases = [
-            { duration: 10, text: "请调整到一个舒适的坐姿" },
-            { duration: 20, text: "闭上眼睛，放松肩膀和下巴" },
-            { duration: 40, text: "深深地吸气... 感受胸腔的扩张" },
-            { duration: 40, text: "缓慢地呼气... 释放所有的压力" },
-            { duration: 40, text: "感受空气流过鼻尖的凉意" },
-            { duration: 20, text: "如果思绪飘走了，温柔地拉回来" },
-            { duration: 10, text: "准备结束，慢慢睁开眼睛" }
+            { duration: 5, text: "嗨~ 让我们暂停一下 ✨" },
+            { duration: 10, text: "找个舒服的姿势坐好，不着急" },
+            { duration: 10, text: "轻轻闭上眼睛，把肩膀放下" },
+            { duration: 8, text: "准备好了吗？先来一次深呼吸..." },
+            { duration: 10, text: "慢慢地吸气... 肚子鼓起来了~" },
+            { duration: 12, text: "缓缓地呼气... 把烦恼都吐出去" },
+            { duration: 10, text: "很棒，再来一次。吸气~ 感受清凉" },
+            { duration: 12, text: "呼气~ 身体变得软绵绵的" },
+            { duration: 15, text: "现在，听听周围有什么声音？" },
+            { duration: 10, text: "不要评价它，只是静静地听" },
+            { duration: 10, text: "思绪跑掉了吗？没关系，抓回来就好了" },
+            { duration: 15, text: "把注意力回到鼻尖的呼吸上" },
+            { duration: 10, text: "你做得非常好，很专注" },
+            { duration: 10, text: "准备结束啦，动动手指和脚趾" },
+            { duration: 5, text: "慢慢睁开眼睛，欢迎回来~ 🌸" }
         ];
 
         // --- 变量 ---
@@ -167,8 +226,8 @@
         let timeRemaining = totalDuration;
         let timerInterval = null;
         let isRunning = false;
-        let currentPhaseIndex = -1; // -1 表示尚未开始
-        let isMuted = false;
+        let currentPhaseIndex = -1;
+        let isMuted = false; // 默认开启声音
 
         // --- DOM 元素 ---
         const timerDisplay = document.getElementById('timer');
@@ -176,6 +235,11 @@
         const mainBtn = document.getElementById('mainBtn');
         const progressBar = document.getElementById('progressBar');
         const muteBtn = document.getElementById('muteBtn');
+        const bgMusic = document.getElementById('bgMusic');
+        const breathBuddy = document.getElementById('breathBuddy');
+
+        // 设置音乐音量 (稍微小一点，不要喧宾夺主)
+        bgMusic.volume = 0.6;
 
         // --- 初始化 ---
         updateTimerDisplay(timeRemaining);
@@ -185,21 +249,20 @@
             if (isRunning) {
                 pauseTimer();
             } else {
+                // 浏览器限制：必须用户操作才能播放音乐和声音
                 startTimer();
             }
         }
 
         function startTimer() {
             isRunning = true;
-            updateBtnState("暂停"); // 强制更新按钮文字
+            updateBtnState("暂停一会儿");
+            bgMusic.play(); // 播放音乐
+            breathBuddy.classList.add('breathing-active'); // 激活呼吸动画
             
-            // 如果是首次开始，读第一句话
             if (currentPhaseIndex === -1) {
                 currentPhaseIndex = 0;
                 updateInstructionAndSpeak();
-            } else {
-                // 如果是从暂停恢复，继续当前的提示（不重读，除非你想重读）
-                // updateInstructionAndSpeak(); 
             }
 
             timerInterval = setInterval(() => {
@@ -217,27 +280,30 @@
         function pauseTimer() {
             isRunning = false;
             clearInterval(timerInterval);
-            updateBtnState("继续"); // 暂停时显示“继续”
-            window.speechSynthesis.cancel(); // 暂停时停止说话
+            updateBtnState("继续放松");
+            window.speechSynthesis.cancel();
+            bgMusic.pause(); // 暂停音乐
+            breathBuddy.classList.remove('breathing-active'); // 停止呼吸动画
         }
 
         function resetTimer() {
             pauseTimer();
             timeRemaining = totalDuration;
             currentPhaseIndex = -1;
-            updateBtnState("开始正念");
-            instructionDisplay.textContent = "准备开始";
+            updateBtnState("开始放松");
+            instructionDisplay.textContent = "准备好了吗？🌱";
             updateTimerDisplay(totalDuration);
             progressBar.style.width = "0%";
-            window.speechSynthesis.cancel();
+            bgMusic.currentTime = 0; // 音乐回到开头
         }
 
         function finishSession() {
             pauseTimer();
-            instructionDisplay.textContent = "练习结束";
-            speak("练习结束，感谢你的专注");
-            updateBtnState("再次开始");
+            instructionDisplay.textContent = "完成啦！你真棒 ✨";
+            speak("完成啦！你真棒，希望你感觉好了一些");
+            updateBtnState("再来一次");
             progressBar.style.width = "100%";
+            breathBuddy.classList.remove('breathing-active');
         }
 
         // --- 辅助逻辑 ---
@@ -248,14 +314,12 @@
 
             for (let i = 0; i < phases.length; i++) {
                 accumulatedTime += phases[i].duration;
-                // 如果当前经过的时间小于累积时间，说明就在这个阶段
                 if (totalElapsed < accumulatedTime) {
                     foundPhaseIndex = i;
                     break;
                 }
             }
             
-            // 如果阶段变了，更新文字并朗读
             if (foundPhaseIndex !== currentPhaseIndex) {
                 currentPhaseIndex = foundPhaseIndex;
                 updateInstructionAndSpeak();
@@ -265,46 +329,40 @@
         function updateInstructionAndSpeak() {
             const text = phases[currentPhaseIndex].text;
             
-            // 视觉更新（淡入淡出）
             instructionDisplay.style.opacity = 0;
             setTimeout(() => {
                 instructionDisplay.textContent = text;
                 instructionDisplay.style.opacity = 1;
-            }, 500);
+            }, 300);
 
-            // 语音播放
             speak(text);
         }
 
-        // --- 语音合成 (TTS) ---
+        // --- 语音合成 (使用上次修复的增强版) ---
         function speak(text) {
             if (isMuted) return;
-            
-            // 取消之前的发音，避免排队
             window.speechSynthesis.cancel();
-
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'zh-CN'; // 设置中文
-            utterance.rate = 0.9;     // 语速稍微慢一点，更适合正念
-            utterance.pitch = 1;      // 正常语调
-            
-            // 尝试触发
+            const voices = window.speechSynthesis.getVoices();
+            const zhVoice = voices.find(v => v.lang === 'zh-CN') || voices.find(v => v.lang.includes('zh'));
+            if (zhVoice) utterance.voice = zhVoice;
+            utterance.rate = 0.95; // 稍微轻快一点点
+            utterance.pitch = 1.1; // 语调稍微高一点，听起来更可爱 
             window.speechSynthesis.speak(utterance);
         }
 
+        // 确保加载语音列表
+        window.speechSynthesis.onvoiceschanged = () => {};
+
         function toggleMute() {
             isMuted = !isMuted;
+            // 只控制人声，不控制背景音乐（背景音乐通常是想要的）
             muteBtn.textContent = isMuted ? "🔇" : "🔊";
-            muteBtn.style.opacity = isMuted ? "0.3" : "1";
+            muteBtn.style.opacity = isMuted ? "0.5" : "1";
         }
 
-        // --- 按钮状态更新 (修复不显示问题) ---
         function updateBtnState(text) {
             mainBtn.textContent = text;
-            // 强制重绘，确保文字变化被看见
-            mainBtn.style.display = 'none';
-            mainBtn.offsetHeight; //读取高度触发重绘
-            mainBtn.style.display = 'inline-block';
         }
 
         function updateTimerDisplay(seconds) {
